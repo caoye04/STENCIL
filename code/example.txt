@@ -1,0 +1,29 @@
+$ source /home/software/spack/share/spack/setup-env.sh
+$ spack load gcc@10.4.0 openmpi numactl@2.0.14
+$ export LD_LIBRARY_PATH=$(spack location -i numactl@2.0.14)/lib:$$LD_LIBRARY_PATH
+
+$ make
+rm -rf benchmark-naive benchmark-optimized check.o benchmark.o stencil-naive.o stencil-optimized.o
+mpicc  -c -Wall -std=c99  -fopenmp check.c -o check.o
+mpicc  -c -Wall -std=c99  -fopenmp benchmark.c -o benchmark.o
+mpicc  -c -Wall -std=c99  -fopenmp stencil-naive.c -o stencil-naive.o
+mpicc  -o benchmark-naive check.o benchmark.o stencil-naive.o -Wall -fopenmp -lm
+mpicc  -c -Wall -std=c99  -fopenmp stencil-optimized.c -o stencil-optimized.o
+mpicc  -o benchmark-optimized check.o benchmark.o stencil-optimized.o -Wall -fopenmp -lm
+
+$ bash benchmark.sh ./benchmark-naive 1 1
+Result unchecked.
+27-point stencil - A naive base-line:
+Size (256 x 256 x 256), Timestep 100
+Preprocessing time 0.000001s
+Computation time 55.716956s, Performance 1.595910Gflop/s
+
+$ bash test.sh ./benchmark-naive 1 1
+errors:
+    1-norm = 0.0000000000000000
+    2-norm = 0.0000000000000000
+  inf-norm = 0.0000000000000000
+27-point stencil - A naive base-line:
+Size (256 x 256 x 256), Timestep 16
+Preprocessing time 0.000001s
+Computation time 8.920366s, Performance 1.594899Gflop/s
