@@ -1,7 +1,8 @@
 
 CC = mpicc 
-OPT =
-CFLAGS = -g -Wall -fopenmp -std=c99 $(OPT)
+OPT = 
+# CFLAGS = -g -Wall  -fopenmp -std=c99 $(OPT)
+CFLAGS = -g -Wall -Ofast -march=native -mavx2 -mfma -fopenmp -ffast-math -funroll-loops -ftree-vectorize -fopenmp -std=c99 $(OPT)
 LDFLAGS = -g -Wall -fopenmp -lm -lnuma
 LDLIBS = $(LDFLAGS)
 
